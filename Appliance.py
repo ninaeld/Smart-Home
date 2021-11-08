@@ -9,7 +9,8 @@ class Appliance():
     #static variable, that saves the type of appliances that already exist
     TypeList = [("Washing Machine", 500, 2), ("Dishwasher", 1800, 1),
                 ("E-Bike Battery", 100, 5), ("Car Battery Hybrid", 1200, 3),
-                ("Car Battery Tesla", 7200, 8)]
+                ("Car Battery Tesla", 7200, 8), ("Phone Charge", 5, 2),
+                ("Tablet Charge", 12, 2), ("Power Bank", 20, 2)]
 
     def __init__(self, house, name, type, endTime):
         self.lock = Lock()
@@ -17,8 +18,8 @@ class Appliance():
         self.name = name
         self.type = type
         #checks for the right values of watt and duration in the type triple
-        for t in Appliance.TypeList:
-            n, watt, hour = t
+        for triple in Appliance.TypeList:
+            n, watt, hour = triple
             if n == type:
                 self.power = watt
                 self.duration = hour

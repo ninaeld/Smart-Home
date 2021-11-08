@@ -5,7 +5,8 @@
 * Internet connection
 * Python version 3 installed
 * The packages matplotlib, numpy, requests, pysolar and schedule need to be installed
-* To install them use pip install <package_name> for Windows
+* To install them use 
+`pip install <package_name>` for Windows
 
 ## How to use
 1. Download the whole file

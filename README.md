@@ -1,18 +1,18 @@
-#Interfacing Smart Homes to their local Smart Grid
-###Bachelor Thesis by Nina Eldridge
+# Interfacing Smart Homes to their local Smart Grid
+### Bachelor Thesis by Nina Eldridge
 
-##Prerequisites
+## Prerequisites
 * Internet connection
 * Python version 3 installed
 * The packages matplotlib, numpy, requests, pysolar and schedule need to be installed
 * To install them use pip install <package_name> for Windows
 
-##How to use
+## How to use
 1. Download the whole file
 2. Run the Main.py file
 3. Use the Graphical User Interface to interact with the program
 
-##Important
+## Important
 * The program only works with local storage, all changes made will be lost when closing 
   the program
 

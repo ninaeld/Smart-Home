@@ -1,5 +1,5 @@
 #Bachelor Thesis by Nina Eldridge, October 2021
-#Simulation of a Smart grid and smart home
+#Interfacing the smart home to its local smart grid
 
 from Appliance import Appliance
 from GUI import GUI

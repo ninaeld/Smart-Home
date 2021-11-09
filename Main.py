@@ -123,7 +123,10 @@ app20 = Appliance(thirteenthHouse, "Bicycle", "E-Bike Battery", datetime.datetim
 #### Main ######
 #run calculations before the program opens, to already
 #get the data and the scheduler would only schedule every hour
-calculation()
+#calculation()
+for town in config.Towns:
+    town.cloud_prediction = 48*[0]
+    town.energy_prediction = 48*[0]
 #open two threads
 #set to daemon = True, such that it ends when main thread ends
 calculationThread = Thread(target=scheduler, daemon=True)

@@ -119,18 +119,9 @@ class Calculations:
                 #calculates the expected radiation on a sunny day depending on the date/time
                 current_date = datetime.datetime(this_year, this_month, this_day, x, 0, 0, 0, tzinfo=datetime.timezone.utc)
                 current_altitude = solar.get_altitude(latitude, longitude, current_date)
-                #if the sun is under the horizon, the calculated altitude is used
-                if current_altitude <=0:
-                    real_altitude = current_altitude
-                elif (current_altitude + house.solarPanel.angle) <= 90:
-                    real_altitude = current_altitude + house.solarPanel.angle
-                else:
-                    #if the two angles add up to more than 90 degrees, the real angle
-                    #between the solar panel and the sun is 90 degrees minus the difference
-                    #of the two angles to 90 degrees
-                    real_altitude = 90 - (current_altitude + house.solarPanel.angle-90)
-                direct_radiation = radiation.get_radiation_direct(current_date, real_altitude)
+                direct_radiation = radiation.get_radiation_direct(current_date, current_altitude)
                 houseEnergy.append(direct_radiation)
+
 
             # have to account for a new day, which could also mean new month, maybe even new year
             next_day = this_date + datetime.timedelta(days=1)
@@ -139,17 +130,7 @@ class Calculations:
                 current_date = datetime.datetime(next_day.year, next_day.month, next_day.day, y, 0, 0, 0,
                                                      tzinfo=datetime.timezone.utc)
                 current_altitude = solar.get_altitude(latitude, longitude, current_date)
-                # if the sun is under the horizon, the calculated altitude is used
-                if current_altitude <= 0:
-                    real_altitude = current_altitude
-                elif (current_altitude + house.solarPanel.angle) <= 90:
-                    real_altitude = current_altitude + house.solarPanel.angle
-                else:
-                    # if the two angles add up to more than 90 degrees, the real angle
-                    # between the solar panel and the sun is 90 degrees minus the difference
-                    # of the two angles to 90 degrees
-                    real_altitude = 90 - (current_altitude + house.solarPanel.angle - 90)
-                direct_radiation = radiation.get_radiation_direct(current_date, real_altitude)
+                direct_radiation = radiation.get_radiation_direct(current_date, current_altitude)
                 houseEnergy.append(direct_radiation)
 
             second_day = next_day + datetime.timedelta(days=1)
@@ -158,17 +139,7 @@ class Calculations:
                 current_date = datetime.datetime(second_day.year, second_day.month, second_day.day, z, 0, 0, 0,
                                                  tzinfo=datetime.timezone.utc)
                 current_altitude = solar.get_altitude(latitude, longitude, current_date)
-                # if the sun is under the horizon, the calculated altitude is used
-                if current_altitude <= 0:
-                    real_altitude = current_altitude
-                elif (current_altitude + house.solarPanel.angle) <= 90:
-                    real_altitude = current_altitude + house.solarPanel.angle
-                else:
-                    # if the two angles add up to more than 90 degrees, the real angle
-                    # between the solar panel and the sun is 90 degrees minus the difference
-                    # of the two angles to 90 degrees
-                    real_altitude = 90 - (current_altitude + house.solarPanel.angle - 90)
-                direct_radiation = radiation.get_radiation_direct(current_date, real_altitude)
+                direct_radiation = radiation.get_radiation_direct(current_date, current_altitude)
                 houseEnergy.append(direct_radiation)
 
             # step 2: update value in the house energy prediction
@@ -183,9 +154,26 @@ class Calculations:
             # iterate over the list of all houses -> getting their area, angle orientation and efficiency
             # while applying the available energy of that hour to each house
             # put it in new list energy available
-            for i in range(48):
+            if(house.solarPanel.orientation == "East"):
+                azimuthSolarPanel = 90
+            elif(house.solarPanel.orientation == "South East"):
+                azimuthSolarPanel = 135
+            elif(house.solarPanel.orientation == "South"):
+                azimuthSolarPanel = 180
+            elif(house.solarPanel.orientation == "South West"):
+                azimuthSolarPanel = 225
+            else:
+                azimuthSolarPanel = 270 #last case that it is West
+
+            for i in range(0, (24-next_hour)):
                 houseEnergy[i] = round(house.solarPanel.area * houseEnergy[i] * house.solarPanel.efficiency, 1)
                 energy_p[i] = round(energy_p[i] + houseEnergy[i], 1)
+            for j in range((24-next_hour), (24-next_hour)+24):
+                houseEnergy[j] = round(house.solarPanel.area * houseEnergy[j] * house.solarPanel.efficiency, 1)
+                energy_p[j] = round(energy_p[j] + houseEnergy[j], 1)
+            for k in range((24-next_hour)+24, 48):
+                houseEnergy[k] = round(house.solarPanel.area * houseEnergy[k] * house.solarPanel.efficiency, 1)
+                energy_p[k] = round(energy_p[k] + houseEnergy[k], 1)
 
             house.currentEnergyProduction = houseEnergy[0]
 

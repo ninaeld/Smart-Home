@@ -96,7 +96,7 @@ class Calculations:
             # append the values into a list
             cloud_p.append(decimal_value)
 
-        print("This is the cloud prediction for " + str(next_hour) + " in " + config.Towns[t].name)
+        print("This is the cloud prediction for " + str(next_hour) + " o'clock in " + config.Towns[t].name)
         print(cloud_p)
 
         ### Second part = energy prediction ###
@@ -165,7 +165,8 @@ class Calculations:
                 azimuthSolarPanel = 270 #last case that it is West
 
             inclinationSolarPanel = house.solarPanel.angle
-            print(azimuthSolarPanel)
+
+            #different for loops for the different days, since the suns azimuth and altitude influence the energy production
             for i in range(0, (24-next_hour)):
                 #get current date and time
                 current_date = datetime.datetime(this_year, this_month, this_day, (next_hour+i), 0, 0, 0,
@@ -221,7 +222,7 @@ class Calculations:
 
             house.currentEnergyProduction = houseEnergy[0]
 
-        print("This is the energy prediction for " + str(config.Towns[t].name) + " considering the area of solar panels")
+        print("This is the energy prediction for " + str(config.Towns[t].name) + " o'clock, considering the area of solar panels")
         print(energy_p)
 
         config.Towns[t].cloud_prediction = cloud_p

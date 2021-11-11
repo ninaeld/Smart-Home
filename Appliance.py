@@ -8,7 +8,7 @@ from threading import Lock
 class Appliance():
     #static variable, that saves the type of appliances that already exist
     TypeList = [("Washing Machine", 500, 2), ("Dishwasher", 1800, 1),
-                ("E-Bike Battery", 100, 5), ("Car Battery Hybrid", 1200, 3),
+                ("E-Bike Battery", 100, 5), ("Car Battery Hybrid", 4000, 4),
                 ("Car Battery Tesla", 7200, 8), ("Phone Charge", 5, 2),
                 ("Tablet Charge", 12, 2), ("Power Bank", 20, 2)]
 

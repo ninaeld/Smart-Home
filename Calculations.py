@@ -4,7 +4,7 @@ import pysolar.solar as solar
 import datetime
 import pysolar.radiation as radiation
 import config
-from math import sin, cos
+from math import sin, cos, radians
 
 class Calculations:
 
@@ -174,20 +174,49 @@ class Calculations:
                 thetaSun = 90 - solar.get_altitude(latitude, longitude, current_date)
                 azimuthSun = solar.get_azimuth(latitude, longitude, current_date)
 
-                effectiveArea = abs(house.solarPanel.area * (sin(thetaSun)*cos(azimuthSun)*sin(inclinationSolarPanel)*cos(azimuthSolarPanel) +
-                                                        sin(thetaSun)*sin(azimuthSun)*sin(inclinationSolarPanel)*sin(azimuthSolarPanel)*cos(inclinationSolarPanel)
-                                                         + cos(thetaSun)*cos(inclinationSolarPanel)))
-                print("This is effective area")
-                print(effectiveArea)
+                effectiveArea = house.solarPanel.area * (sin(radians(thetaSun))*cos(radians(azimuthSun))*sin(radians(inclinationSolarPanel))*
+                                                         cos(radians(azimuthSolarPanel))+sin(radians(thetaSun))*sin(radians(azimuthSun))*
+                                                         sin(radians(inclinationSolarPanel))*sin(radians(azimuthSolarPanel))*
+                                                         cos(radians(inclinationSolarPanel))+cos(radians(thetaSun))*cos(radians(inclinationSolarPanel)))
 
                 #the energy output is then the effective area times the irradiation times the efficiency
                 houseEnergy[i] = round(effectiveArea * houseEnergy[i] * house.solarPanel.efficiency, 1)
                 energy_p[i] = round(energy_p[i] + houseEnergy[i], 1)
+
             for j in range((24-next_hour), (24-next_hour)+24):
-                houseEnergy[j] = round(house.solarPanel.area * houseEnergy[j] * house.solarPanel.efficiency, 1)
+                a = j - (24-next_hour)
+                # get current date and time
+                current_date = datetime.datetime(next_day.year, next_day.month, next_day.day, a, 0, 0, 0,
+                                                 tzinfo=datetime.timezone.utc)
+                # get the altitude of the sun at that time, and calculate theta
+                thetaSun = 90 - solar.get_altitude(latitude, longitude, current_date)
+                azimuthSun = solar.get_azimuth(latitude, longitude, current_date)
+
+                effectiveArea = house.solarPanel.area * (
+                            sin(radians(thetaSun)) * cos(radians(azimuthSun)) * sin(radians(inclinationSolarPanel)) *
+                            cos(radians(azimuthSolarPanel)) + sin(radians(thetaSun)) * sin(radians(azimuthSun)) *
+                            sin(radians(inclinationSolarPanel)) * sin(radians(azimuthSolarPanel)) *
+                            cos(radians(inclinationSolarPanel)) + cos(radians(thetaSun)) * cos(radians(inclinationSolarPanel)))
+
+                houseEnergy[j] = round(effectiveArea * houseEnergy[j] * house.solarPanel.efficiency, 1)
                 energy_p[j] = round(energy_p[j] + houseEnergy[j], 1)
+
             for k in range((24-next_hour)+24, 48):
-                houseEnergy[k] = round(house.solarPanel.area * houseEnergy[k] * house.solarPanel.efficiency, 1)
+                b = k-((24-next_hour)+24)
+                # get current date and time
+                current_date = datetime.datetime(second_day.year, second_day.month, second_day.day, b, 0, 0, 0,
+                                                 tzinfo=datetime.timezone.utc)
+                # get the altitude of the sun at that time, and calculate theta
+                thetaSun = 90 - solar.get_altitude(latitude, longitude, current_date)
+                azimuthSun = solar.get_azimuth(latitude, longitude, current_date)
+
+                effectiveArea = house.solarPanel.area * (
+                            sin(radians(thetaSun)) * cos(radians(azimuthSun)) * sin(radians(inclinationSolarPanel)) *
+                            cos(radians(azimuthSolarPanel)) + sin(radians(thetaSun)) * sin(radians(azimuthSun)) *
+                            sin(radians(inclinationSolarPanel)) * sin(radians(azimuthSolarPanel)) *
+                            cos(radians(inclinationSolarPanel)) + cos(radians(thetaSun)) * cos(radians(inclinationSolarPanel)))
+
+                houseEnergy[k] = round(effectiveArea * houseEnergy[k] * house.solarPanel.efficiency, 1)
                 energy_p[k] = round(energy_p[k] + houseEnergy[k], 1)
 
             house.currentEnergyProduction = houseEnergy[0]

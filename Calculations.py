@@ -4,7 +4,7 @@ import pysolar.solar as solar
 import datetime
 import pysolar.radiation as radiation
 import config
-
+from math import sin, cos
 
 class Calculations:
 
@@ -122,7 +122,6 @@ class Calculations:
                 direct_radiation = radiation.get_radiation_direct(current_date, current_altitude)
                 houseEnergy.append(direct_radiation)
 
-
             # have to account for a new day, which could also mean new month, maybe even new year
             next_day = this_date + datetime.timedelta(days=1)
             for y in range(24):
@@ -165,8 +164,24 @@ class Calculations:
             else:
                 azimuthSolarPanel = 270 #last case that it is West
 
+            inclinationSolarPanel = house.solarPanel.angle
+            print(azimuthSolarPanel)
             for i in range(0, (24-next_hour)):
-                houseEnergy[i] = round(house.solarPanel.area * houseEnergy[i] * house.solarPanel.efficiency, 1)
+                #get current date and time
+                current_date = datetime.datetime(this_year, this_month, this_day, (next_hour+i), 0, 0, 0,
+                                                 tzinfo=datetime.timezone.utc)
+                #get the altitude of the sun at that time, and calculate theta
+                thetaSun = 90 - solar.get_altitude(latitude, longitude, current_date)
+                azimuthSun = solar.get_azimuth(latitude, longitude, current_date)
+
+                effectiveArea = abs(house.solarPanel.area * (sin(thetaSun)*cos(azimuthSun)*sin(inclinationSolarPanel)*cos(azimuthSolarPanel) +
+                                                        sin(thetaSun)*sin(azimuthSun)*sin(inclinationSolarPanel)*sin(azimuthSolarPanel)*cos(inclinationSolarPanel)
+                                                         + cos(thetaSun)*cos(inclinationSolarPanel)))
+                print("This is effective area")
+                print(effectiveArea)
+
+                #the energy output is then the effective area times the irradiation times the efficiency
+                houseEnergy[i] = round(effectiveArea * houseEnergy[i] * house.solarPanel.efficiency, 1)
                 energy_p[i] = round(energy_p[i] + houseEnergy[i], 1)
             for j in range((24-next_hour), (24-next_hour)+24):
                 houseEnergy[j] = round(house.solarPanel.area * houseEnergy[j] * house.solarPanel.efficiency, 1)

@@ -39,9 +39,9 @@ def calculation():
     this_date = datetime.datetime.now()
     this_date = this_date.replace(minute=0, second=0, microsecond=0)
     #UNCOMMENT: to simulate an hour each minute / seconds
-    #this_date = this_date + datetime.timedelta(hours=config.hour_counter)
+    this_date = this_date + datetime.timedelta(hours=config.hour_counter)
     print("Current date and time")
-    print(this_date)
+    print(this_date+datetime.timedelta(hours=1))
     for h in range(0, len(config.Towns)):
         Calculations.get_predictions(h, this_date, lock)
         Scheduling.schedule_appliances(h, this_date, lock)
@@ -50,15 +50,15 @@ def calculation():
     #update the front page with the new calculations
     GUI.updateFrontpage()
     #UNCOMMENT: to simulate an hour each minute
-    #config.hour_counter = config.hour_counter + 1
+    config.hour_counter = config.hour_counter + 1
 
 #scheduler function
 def scheduler():
     # COMMENT: so the program doesn't run in real time
-    schedule.every().hour.at(":59").do(calculation)
+    #schedule.every().hour.at(":59").do(calculation)
     # UNCOMMENT: to simulate an hour each 15 seconds or each minute
     # IMPORTANT: uncomment only one line
-    #schedule.every(15).seconds.do(calculation)
+    schedule.every(15).seconds.do(calculation)
     #schedule.every(1).minutes.do(calculation)
     while True:
         schedule.run_pending()
